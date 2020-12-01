@@ -14,18 +14,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import database.IToDoDatabase;
+import login.ILoginHandler;
+import model.Token;
 
 public class ClientThread extends Thread {
 	private static int clientNumberStatic = 0;
 	private Socket socket;
 	private int clientNumber;
 	private IToDoDatabase toDoDatabase;
+	private ILoginHandler loginHandler;
 
-	public ClientThread(Socket socket, IToDoDatabase toDoDatabase) {
+	public ClientThread(Socket socket, IToDoDatabase toDoDatabase, ILoginHandler loginHandler) {
 		super("Client thread " + clientNumberStatic);
 		clientNumber = clientNumberStatic++;
 		this.socket = socket;
 		this.toDoDatabase = toDoDatabase;
+		this.loginHandler = loginHandler;
 	}
 
 	@Override
@@ -104,6 +108,18 @@ public class ClientThread extends Thread {
 	}
 	
 	private String commandLogin(String[] parts) {
-		return null;
+		if(parts.length < 3) {
+			System.out.println("The command was not in a correct format! It should be Login|email|password!");
+			return "Result|false";
+		}
+		
+		String email = parts[1];
+		String password = parts[2];
+		Token token = loginHandler.login(email, password);
+		if(token == null) {
+			return "Result|false";
+		}
+		
+		return "Result|true|" + token;
 	}
 }

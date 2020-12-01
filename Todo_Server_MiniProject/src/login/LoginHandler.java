@@ -26,7 +26,7 @@ public class LoginHandler implements ILoginHandler {
 		if(!user.getPassword().equals(password)) {
 			return null;
 		}
-		
+
 		Token token = new Token(EXPIRY_TIME_MINUTES);
 		loggedUsersTokens.put(email, token);
 		return token;

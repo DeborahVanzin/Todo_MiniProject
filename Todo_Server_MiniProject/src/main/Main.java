@@ -28,7 +28,7 @@ public class Main {
 				// Wait for request, then create input/output streams to talk to the client
 				System.out.println("Waiting for a client to connect...");
 				Socket socket = listener.accept();
-				ClientThread clientThread = new ClientThread(socket, toDoDatabase); // Dependency injection
+				ClientThread clientThread = new ClientThread(socket, toDoDatabase, loginHandler); // Dependency injection
 				clientThread.start();
 			}
 		}
