@@ -55,12 +55,30 @@ public class InMemoryToDoDatabase implements IToDoDatabase {
 			return -1;
 		}
 		
-		userToDoLists.putIfAbsent(email, new ArrayList<ToDo>()); 
+		userToDoLists.putIfAbsent(email, new ArrayList<ToDo>());
 		
 		List<ToDo> toDoList = userToDoLists.get(email);
 		int index = toDoList.size();
 		toDoList.add(new ToDo(title, priority, description, LocalDate.now()));
 		return index;
+	}
+	
+	@Override
+	public List<Integer> listToDos(String token) {
+		String email = loginHandler.validateToken(token);
+		if(email == null) {
+			return null;
+		}
+		
+		userToDoLists.putIfAbsent(email, new ArrayList<ToDo>());
+		
+		List<ToDo> toDoList = userToDoLists.get(email);
+		List<Integer> result = new ArrayList<>();
+		for(int i = 0; i < toDoList.size(); i++) {
+			result.add(i);
+		}
+
+		return result;
 	}
 
 	@Override

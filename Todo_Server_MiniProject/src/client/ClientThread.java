@@ -79,6 +79,9 @@ public class ClientThread extends Thread {
 			case "CreateToDo":
 				result = commandCreateToDo(parts);
 				break;
+			case "ListToDos":
+				result = commandListToDos(parts);
+				break;
 			default:
 				System.out.println("Unknown command!");
 				return "Result|false";
@@ -155,5 +158,26 @@ public class ClientThread extends Thread {
 		}
 
 		return "Result|true|" + index;
+	}
+	
+	private String commandListToDos(String[] parts) {
+		if(parts.length < 2) {
+			System.out.println("The command was not in a correct format! It should be ListToDos|Token");
+			return "Result|false";
+		}
+		
+		String token = parts[1];
+		List<Integer> todos = toDoDatabase.listToDos(token);
+		if(todos == null) {
+			System.out.println("Validation of given token failed! Please provide valid, non-expired token!");
+			return "Result|false";
+		}
+		
+		String result = "Result|true";
+		for(int toDoIndex : todos) {
+			result += "|" + toDoIndex;
+		}
+		
+		return result;
 	}
 }

@@ -11,6 +11,7 @@ public interface IToDoDatabase {
 	User getUserByEmail(String email);
 	
 	int createToDo(String token, String title, Priority priority, String description);
+	List<Integer> listToDos(String token);
 	
 	void setLoginHandler(ILoginHandler loginHandler);
 }
