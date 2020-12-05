@@ -15,6 +15,7 @@ import java.util.List;
 
 import database.IToDoDatabase;
 import login.ILoginHandler;
+import model.Priority;
 import model.Token;
 
 public class ClientThread extends Thread {
@@ -75,6 +76,9 @@ public class ClientThread extends Thread {
 			case "Login":
 				result = commandLogin(parts);
 				break;
+			case "CreateToDo":
+				result = commandCreateToDo(parts);
+				break;
 			default:
 				System.out.println("Unknown command!");
 				return "Result|false";
@@ -121,5 +125,35 @@ public class ClientThread extends Thread {
 		}
 		
 		return "Result|true|" + token;
+	}
+	
+	private String commandCreateToDo(String[] parts) {
+		if(parts.length < 5) {
+			System.out.println("The command was not in a correct format! It should be CreateToDo|Token|Title|Priority|Description");
+			return "Result|false";
+		}
+		
+		String token = parts[1];
+		String title = parts[2];
+		String priority = parts[3];
+		String description = parts[4];
+		Priority parsedPriority = null;
+		try
+		{
+			parsedPriority = Priority.valueOf(priority);
+		}
+		catch(IllegalArgumentException ex)
+		{
+			System.out.println("Priority was not in correct format! Please select one of [low, medium, high]!");
+			return "Result|false";
+		}
+		
+		int index = toDoDatabase.createToDo(token, title, parsedPriority, description);
+		if(index == -1) {
+			System.out.println("Validation of given token failed! Please provide valid, non-expired token!");
+			return "Result|false";
+		}
+
+		return "Result|true|" + index;
 	}
 }
