@@ -80,6 +80,23 @@ public class InMemoryToDoDatabase implements IToDoDatabase {
 
 		return result;
 	}
+	
+	@Override
+	public ToDo getToDo(String token, int index) {
+		String email = loginHandler.validateToken(token);
+		if(email == null) {
+			return null;
+		}
+		
+		userToDoLists.putIfAbsent(email, new ArrayList<ToDo>());
+		
+		List<ToDo> toDoList = userToDoLists.get(email);
+		if(index < 0 || index >= toDoList.size()) {
+			return null;
+		}
+
+		return toDoList.get(index);
+	}
 
 	@Override
 	public void setLoginHandler(ILoginHandler loginHandler) {

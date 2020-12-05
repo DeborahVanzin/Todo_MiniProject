@@ -16,6 +16,7 @@ import java.util.List;
 import database.IToDoDatabase;
 import login.ILoginHandler;
 import model.Priority;
+import model.ToDo;
 import model.Token;
 
 public class ClientThread extends Thread {
@@ -82,6 +83,9 @@ public class ClientThread extends Thread {
 			case "ListToDos":
 				result = commandListToDos(parts);
 				break;
+			case "GetToDo":
+				result = commandGetToDo(parts);
+				break;
 			default:
 				System.out.println("Unknown command!");
 				return "Result|false";
@@ -90,7 +94,7 @@ public class ClientThread extends Thread {
 		System.out.println("Request from " + getClientNumberText() + " handled successfully!");
 		return result;
 	}
-	
+
 	private String getClientNumberText() {
 		return "client number #" + clientNumber;
 	}
@@ -179,5 +183,33 @@ public class ClientThread extends Thread {
 		}
 		
 		return result;
+	}
+	
+	private String commandGetToDo(String[] parts) {
+		if(parts.length < 3) {
+			System.out.println("The command was not in a correct format! It should be ListToDos|Token");
+			return "Result|false";
+		}
+		
+		String token = parts[1];
+		String index = parts[2];
+		int parsedIndex = 0;
+		try
+		{
+			parsedIndex = Integer.parseInt(index);
+		}
+		catch(NumberFormatException ex)
+		{
+			System.out.println("Index was not in correct format! Please provide a valid index!");
+			return "Result|false";
+		}
+		
+		ToDo toDo = toDoDatabase.getToDo(token, parsedIndex);
+		if(toDo == null) {
+			System.out.println("Such ToDo doesn't exist! Please provide a valid index of ToDo entry!");
+			return "Result|false";
+		}
+				
+		return "Result|true|" + index + "|" + toDo.getTitle() + "|" + toDo.getPriority() + "|" + toDo.getDescription();
 	}
 }
