@@ -49,7 +49,7 @@ public class InMemoryToDoDatabase implements IToDoDatabase {
 	}
 
 	@Override
-	public int createToDo(String token, String title, Priority priority, String description) {
+	public int createToDo(String token, String title, Priority priority, String description, LocalDate dueDate) {
 		String email = loginHandler.validateToken(token);
 		if(email == null) {
 			return -1;
@@ -59,7 +59,7 @@ public class InMemoryToDoDatabase implements IToDoDatabase {
 		
 		List<ToDo> toDoList = userToDoLists.get(email);
 		int index = toDoList.size();
-		toDoList.add(new ToDo(title, priority, description, LocalDate.now()));
+		toDoList.add(new ToDo(title, priority, description, dueDate));
 		return index;
 	}
 	

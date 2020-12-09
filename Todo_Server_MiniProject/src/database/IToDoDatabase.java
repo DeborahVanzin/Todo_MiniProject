@@ -1,5 +1,6 @@
 package database;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import login.ILoginHandler;
@@ -11,7 +12,7 @@ public interface IToDoDatabase {
 	boolean createLogin(String email, String password);
 	User getUserByEmail(String email);
 	
-	int createToDo(String token, String title, Priority priority, String description);
+	int createToDo(String token, String title, Priority priority, String description, LocalDate dueDate);
 	List<Integer> listToDos(String token);
 	ToDo getToDo(String token, int index);
 	

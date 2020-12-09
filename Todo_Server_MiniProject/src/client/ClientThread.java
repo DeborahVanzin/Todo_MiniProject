@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -145,8 +147,8 @@ public class ClientThread extends Thread {
 	}
 	
 	private String commandCreateToDo(String[] parts) {
-		if(parts.length < 5) {
-			System.out.println("The command was not in a correct format! It should be CreateToDo|Token|Title|Priority|Description");
+		if(parts.length < 6) {
+			System.out.println("The command was not in a correct format! It should be CreateToDo|Token|Title|Priority|Description|DueDate");
 			return "Result|false";
 		}
 		
@@ -154,7 +156,9 @@ public class ClientThread extends Thread {
 		String title = parts[2];
 		String priority = parts[3];
 		String description = parts[4];
+		String dueDate = parts[5];
 		Priority parsedPriority = null;
+		LocalDate parsedDueDate = null;
 		try
 		{
 			parsedPriority = Priority.valueOf(priority);
@@ -165,7 +169,17 @@ public class ClientThread extends Thread {
 			return "Result|false";
 		}
 		
-		int index = toDoDatabase.createToDo(token, title, parsedPriority, description);
+		try
+		{
+			parsedDueDate = LocalDate.parse(dueDate);
+		}
+		catch(DateTimeParseException ex)
+		{
+			System.out.println("Due date was not in correct format! Please enter due date in YYYY-MM-DD format!");
+			return "Result|false";
+		}
+		
+		int index = toDoDatabase.createToDo(token, title, parsedPriority, description, parsedDueDate);
 		if(index == -1) {
 			System.out.println("Validation of given token failed! Please provide valid, non-expired token!");
 			return "Result|false";
@@ -197,7 +211,7 @@ public class ClientThread extends Thread {
 	
 	private String commandGetToDo(String[] parts) {
 		if(parts.length < 3) {
-			System.out.println("The command was not in a correct format! It should be ListToDos|Token");
+			System.out.println("The command was not in a correct format! It should be GetToDo|Token|Index");
 			return "Result|false";
 		}
 		
@@ -220,7 +234,7 @@ public class ClientThread extends Thread {
 			return "Result|false";
 		}
 				
-		return "Result|true|" + index + "|" + toDo.getTitle() + "|" + toDo.getPriority() + "|" + toDo.getDescription();
+		return "Result|true|" + index + "|" + toDo.getTitle() + "|" + toDo.getPriority() + "|" + toDo.getDescription() + "|" + toDo.getDueDate().toString();
 	}
 	
 	private String commandLogout(String[] parts) {
