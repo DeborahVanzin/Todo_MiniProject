@@ -86,6 +86,9 @@ public class ClientThread extends Thread {
 			case "GetToDo":
 				result = commandGetToDo(parts);
 				break;
+			case "Logout":
+				result = commandLogout(parts);
+				break;
 			default:
 				System.out.println("Unknown command!");
 				return "Result|false";
@@ -218,5 +221,19 @@ public class ClientThread extends Thread {
 		}
 				
 		return "Result|true|" + index + "|" + toDo.getTitle() + "|" + toDo.getPriority() + "|" + toDo.getDescription();
+	}
+	
+	private String commandLogout(String[] parts) {
+		if(parts.length < 2) {
+			System.out.println("The command was not in a correct format! It should be Logout|Token");
+			return "Result|false";
+		}
+		
+		String token = parts[1];
+		if(!loginHandler.logout(token)) {
+			return "Result|false";
+		}
+				
+		return "Result|true";
 	}
 }
