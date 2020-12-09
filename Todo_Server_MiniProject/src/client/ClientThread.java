@@ -100,6 +100,13 @@ public class ClientThread extends Thread {
 	}
 	
 	private String commandPing(String[] parts) {
+		if(parts.length >= 2) {
+			// Now the token is present and must be validated
+			String token = parts[1];
+			if(loginHandler.validateToken(token) == null) {
+				return "Result|false";
+			}
+		}
 		return "Result|true";
 	}
 	
