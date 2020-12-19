@@ -1,0 +1,7 @@
+.valid{
+	-fx-text-fill: green;
+}
+
+.invalid{
+	-fx-text-fill:red;
+}
