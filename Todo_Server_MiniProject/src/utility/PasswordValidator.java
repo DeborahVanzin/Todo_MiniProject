@@ -1,8 +1,16 @@
 package utility;
 
+/**
+ * Utility class that helps to validate passwords.
+ */
 public class PasswordValidator {
 	private final static int MINIMAL_LENGTH = 6;
 
+	/**
+	 * Checks if the given password is valid and meets the password requirements.
+	 * @param password Password to be validated
+	 * @return True, if the password is valid and meets all the password requirements or false otherwise.
+	 */
 	public static boolean validate(String password) {
 		if (password.length() < MINIMAL_LENGTH) {
 			System.out.println("Password is too short! It must have at least " + MINIMAL_LENGTH + " characters!");
@@ -20,16 +28,25 @@ public class PasswordValidator {
 		return true;
 	}
 	
+	/**
+	 * Checks if the given password contains at least one upper-case character.
+	 */
 	private static boolean containsUpperCase(String password) {
 		return password.matches(".*[A-Z].*");
 	}
 
+	/**
+	 * Checks if the given password contains at least one lower-case character.
+	 */
 	private static boolean containsLowerCase(String password) {
 		if (password.matches(".*[a-z].*"))
 			return true;
 		return false;
 	}
 
+	/**
+	 * Checks if the given password contains at least one digit character.
+	 */
 	private static boolean containsDigit(String password) {
 		if (password.matches(".*\\d.*"))
 			return true;

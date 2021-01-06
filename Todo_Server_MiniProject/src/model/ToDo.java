@@ -2,6 +2,9 @@ package model;
 
 import java.time.LocalDate;
 
+/**
+ * Represents ToDo entry.
+ */
 public class ToDo {
 	private String title;
 	private Priority priority;

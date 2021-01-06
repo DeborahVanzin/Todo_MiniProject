@@ -1,10 +1,6 @@
 package client;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -12,8 +8,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import database.IToDoDatabase;
 import login.ILoginHandler;
@@ -21,12 +17,17 @@ import model.Priority;
 import model.ToDo;
 import model.Token;
 
+/**
+ * Helper class that extends Thread and handles communication with one client.
+ */
 public class ClientThread extends Thread {
-	private static int clientNumberStatic = 0;
-	private Socket socket;
-	private int clientNumber;
-	private IToDoDatabase toDoDatabase;
-	private ILoginHandler loginHandler;
+	private static Logger logger = Logger.getLogger(ClientThread.class.getName());
+	
+	private static int clientNumberStatic = 0; // Number of next connected client
+	private Socket socket; // Socket used for communication with the client
+	private int clientNumber; // Assigned number of the client
+	private IToDoDatabase toDoDatabase; // Database of ToDos
+	private ILoginHandler loginHandler; // Handler of logins and users
 
 	public ClientThread(Socket socket, IToDoDatabase toDoDatabase, ILoginHandler loginHandler) {
 		super("Client thread " + clientNumberStatic);
@@ -36,6 +37,10 @@ public class ClientThread extends Thread {
 		this.loginHandler = loginHandler;
 	}
 
+	/**
+	 * Main method of the client, that opens input and output streams
+	 * and handles the request from the client.
+	 */
 	@Override
 	public void run() {
 		System.out.println("A " + getClientNumberText() +" has connected!");
@@ -57,6 +62,11 @@ public class ClientThread extends Thread {
 		System.out.println("Handling for client #" + clientNumber + " has ended!");
 	}
 	
+	/**
+	 * Handles request from the client. Invokes appropriate command
+	 * for a valid request coming or logs that the command is not valid.
+	 * @param request Plain-text unprocessed request from the client
+	 */
 	private String handleRequest(String request) {
 		String[] parts = request.split("\\|");
 		if(parts.length == 0) {
@@ -100,10 +110,19 @@ public class ClientThread extends Thread {
 		return result;
 	}
 
+	/**
+	 * Gets text that includes client number. Used in multiple parts
+	 * of this class, therefore it's extracted into this function.
+	 * @return Formatted text with client number.
+	 */
 	private String getClientNumberText() {
 		return "client number #" + clientNumber;
 	}
 	
+	/**
+	 * Handles Ping command from the client.
+	 * @param parts Parsed request from client (array of individual strings)
+	 */
 	private String commandPing(String[] parts) {
 		if(parts.length >= 2) {
 			// Now the token is present and must be validated
@@ -115,9 +134,13 @@ public class ClientThread extends Thread {
 		return "Result|true";
 	}
 	
+	/**
+	 * Handles CreateLogin command from the client.
+	 * @param parts Parsed request from client (array of individual strings)
+	 */
 	private String commandCreateLogin(String[] parts) {
 		if(parts.length < 3) {
-			System.out.println("The command was not in a correct format! It should be CreateLogin|email|password!");
+			logger.severe("The command was not in a correct format! It should be CreateLogin|email|password!");
 			return "Result|false";
 		}
 		
@@ -130,6 +153,10 @@ public class ClientThread extends Thread {
 		return "Result|true";
 	}
 	
+	/**
+	 * Handles Login command from the client.
+	 * @param parts Parsed request from client (array of individual strings)
+	 */
 	private String commandLogin(String[] parts) {
 		if(parts.length < 3) {
 			System.out.println("The command was not in a correct format! It should be Login|email|password!");
@@ -146,6 +173,10 @@ public class ClientThread extends Thread {
 		return "Result|true|" + token;
 	}
 	
+	/**
+	 * Handles CreateToDo command from the client.
+	 * @param parts Parsed request from client (array of individual strings)
+	 */
 	private String commandCreateToDo(String[] parts) {
 		if(parts.length < 6) {
 			System.out.println("The command was not in a correct format! It should be CreateToDo|Token|Title|Priority|Description|DueDate");
@@ -188,6 +219,10 @@ public class ClientThread extends Thread {
 		return "Result|true|" + index;
 	}
 	
+	/**
+	 * Handles ListToDos command from the client.
+	 * @param parts Parsed request from client (array of individual strings)
+	 */
 	private String commandListToDos(String[] parts) {
 		if(parts.length < 2) {
 			System.out.println("The command was not in a correct format! It should be ListToDos|Token");
@@ -209,6 +244,10 @@ public class ClientThread extends Thread {
 		return result;
 	}
 	
+	/**
+	 * Handles GetToDo command from the client.
+	 * @param parts Parsed request from client (array of individual strings)
+	 */
 	private String commandGetToDo(String[] parts) {
 		if(parts.length < 3) {
 			System.out.println("The command was not in a correct format! It should be GetToDo|Token|Index");
@@ -237,6 +276,10 @@ public class ClientThread extends Thread {
 		return "Result|true|" + index + "|" + toDo.getTitle() + "|" + toDo.getPriority() + "|" + toDo.getDescription() + "|" + toDo.getDueDate().toString();
 	}
 	
+	/**
+	 * Handles Logout command from the client.
+	 * @param parts Parsed request from client (array of individual strings)
+	 */
 	private String commandLogout(String[] parts) {
 		if(parts.length < 2) {
 			System.out.println("The command was not in a correct format! It should be Logout|Token");
