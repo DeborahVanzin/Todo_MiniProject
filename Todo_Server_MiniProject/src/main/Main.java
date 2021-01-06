@@ -2,6 +2,7 @@ package main;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 import client.ClientThread;
 import database.IToDoDatabase;
@@ -12,8 +13,8 @@ import model.Token;
 import model.User;
 
 public class Main {
-	
-	private static final int PORT = 50002;
+	private static Logger logger = Logger.getLogger(Main.class.getName());
+	private static final int PORT = 50002; // Port that application listens on
 	
 	public static void main(String[] args) {
 		System.out.println("Todo Server MiniProject has started!");
@@ -25,10 +26,10 @@ public class Main {
 		try (ServerSocket listener = new ServerSocket(PORT)) {
 			
 			while (true) {
-				// Wait for request, then create input/output streams to talk to the client
-				System.out.println("Waiting for a client to connect...");
+				// Wait for a client to connect and then create a separate thread to serve the client
+				logger.info("Waiting for a client to connect...");
 				Socket socket = listener.accept();
-				ClientThread clientThread = new ClientThread(socket, toDoDatabase, loginHandler); // Dependency injection
+				ClientThread clientThread = new ClientThread(socket, toDoDatabase, loginHandler);
 				clientThread.start();
 			}
 		}

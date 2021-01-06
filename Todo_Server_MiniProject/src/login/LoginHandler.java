@@ -6,6 +6,7 @@ import java.util.Map;
 import database.IToDoDatabase;
 import model.Token;
 import model.User;
+import utility.PasswordHasher;
 
 public class LoginHandler implements ILoginHandler {
 	private final int EXPIRY_TIME_MINUTES = 1;
@@ -23,7 +24,7 @@ public class LoginHandler implements ILoginHandler {
 			return null;
 		}
 		
-		if(!user.getPassword().equals(password)) {
+		if(!user.getPasswordHash().equals(PasswordHasher.calculatePasswordHash(password))) {
 			return null;
 		}
 
