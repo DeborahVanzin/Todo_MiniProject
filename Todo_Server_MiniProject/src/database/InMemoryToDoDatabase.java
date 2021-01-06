@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import login.ILoginHandler;
 import model.Priority;
@@ -13,6 +14,8 @@ import model.User;
 import utility.PasswordValidator;
 
 public class InMemoryToDoDatabase implements IToDoDatabase {
+	private static Logger logger = Logger.getLogger(InMemoryToDoDatabase.class.getName());
+
 	private List<User> users = new ArrayList<>();
 	private Map<String, List<ToDo>> userToDoLists = new HashMap<>();
 	private ILoginHandler loginHandler;
@@ -27,12 +30,12 @@ public class InMemoryToDoDatabase implements IToDoDatabase {
 		// Wenn jemand sich mit gleichem Email registriert, sollen wir das nicht erlauben
 		for (int i =0; i < users.size(); i++) {
 			if(users.get(i).getEmail().equals(email)) {
-				System.out.println("User with email " + email + " is already registered!");
+				logger.severe("User with email " + email + " is already registered!");
 				return false;
 			}
 		}
 		
-		System.out.println("User with email " + email + " has been registered!");
+		logger.info("User with email " + email + " has been registered!");
 		users.add(new User(email, password));
 		return true;
 	}

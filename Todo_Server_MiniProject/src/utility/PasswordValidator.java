@@ -1,9 +1,13 @@
 package utility;
 
+import java.util.logging.Logger;
+
 /**
  * Utility class that helps to validate passwords.
  */
 public class PasswordValidator {
+	private static Logger logger = Logger.getLogger(PasswordValidator.class.getName());
+
 	private final static int MINIMAL_LENGTH = 6;
 
 	/**
@@ -13,16 +17,16 @@ public class PasswordValidator {
 	 */
 	public static boolean validate(String password) {
 		if (password.length() < MINIMAL_LENGTH) {
-			System.out.println("Password is too short! It must have at least " + MINIMAL_LENGTH + " characters!");
+			logger.warning("Password is too short! It must have at least " + MINIMAL_LENGTH + " characters!");
 			return false;
 		} else if (!containsDigit(password)) {
-			System.out.println("Password must contain digit!");
+			logger.warning("Password must contain digit!");
 			return false;
 		} else if (!containsUpperCase(password)) {
-			System.out.println("Password must contain upper case character!");
+			logger.warning("Password must contain upper case character!");
 			return false;
 		} else if (!containsLowerCase(password)) {
-			System.out.println("Password must contain lower case character!");
+			logger.warning("Password must contain lower case character!");
 			return false;
 		}
 		return true;

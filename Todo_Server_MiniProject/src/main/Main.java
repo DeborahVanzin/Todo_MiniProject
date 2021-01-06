@@ -17,7 +17,7 @@ public class Main {
 	private static final int PORT = 50002; // Port that application listens on
 	
 	public static void main(String[] args) {
-		System.out.println("Todo Server MiniProject has started!");
+		logger.info("Todo Server MiniProject has started!");
 		
 		IToDoDatabase toDoDatabase = new InMemoryToDoDatabase();
 		ILoginHandler loginHandler = new LoginHandler(toDoDatabase);

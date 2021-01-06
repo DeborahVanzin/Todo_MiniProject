@@ -43,13 +43,13 @@ public class ClientThread extends Thread {
 	 */
 	@Override
 	public void run() {
-		System.out.println("A " + getClientNumberText() +" has connected!");
+		logger.info("A " + getClientNumberText() +" has connected!");
 		
 		try (BufferedReader inReader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 			OutputStream outBinary = socket.getOutputStream();
 	        PrintWriter outText = new PrintWriter(outBinary);
 			String request = inReader.readLine();
-			System.out.println("Request '" + request + "' received from " + getClientNumberText());
+			logger.info("Request '" + request + "' received from " + getClientNumberText());
 			String answer = handleRequest(request);
 			
 			outText.println(answer);
@@ -59,7 +59,7 @@ public class ClientThread extends Thread {
 		} catch (IOException e) {
 
 		}
-		System.out.println("Handling for client #" + clientNumber + " has ended!");
+		logger.info("Handling for client #" + clientNumber + " has ended!");
 	}
 	
 	/**
@@ -70,12 +70,12 @@ public class ClientThread extends Thread {
 	private String handleRequest(String request) {
 		String[] parts = request.split("\\|");
 		if(parts.length == 0) {
-			System.out.println("Invalid format of message! It doesn't contain any command!");
+			logger.severe("Invalid format of message! It doesn't contain any command!");
 			return "Result|false";
 		}
 		
 		String command = parts[0];
-		System.out.println("Command for " + getClientNumberText() + " is " + command);
+		logger.info("Command for " + getClientNumberText() + " is " + command);
 
 		String result = "";
 		switch(command)
@@ -102,11 +102,11 @@ public class ClientThread extends Thread {
 				result = commandLogout(parts);
 				break;
 			default:
-				System.out.println("Unknown command!");
+			logger.warning("Unknown command!");
 				return "Result|false";
 		}
 		
-		System.out.println("Request from " + getClientNumberText() + " handled successfully!");
+		logger.info("Request from " + getClientNumberText() + " handled successfully!");
 		return result;
 	}
 
@@ -159,7 +159,7 @@ public class ClientThread extends Thread {
 	 */
 	private String commandLogin(String[] parts) {
 		if(parts.length < 3) {
-			System.out.println("The command was not in a correct format! It should be Login|email|password!");
+			logger.severe("The command was not in a correct format! It should be Login|email|password!");
 			return "Result|false";
 		}
 		
@@ -179,7 +179,7 @@ public class ClientThread extends Thread {
 	 */
 	private String commandCreateToDo(String[] parts) {
 		if(parts.length < 6) {
-			System.out.println("The command was not in a correct format! It should be CreateToDo|Token|Title|Priority|Description|DueDate");
+			logger.severe("The command was not in a correct format! It should be CreateToDo|Token|Title|Priority|Description|DueDate");
 			return "Result|false";
 		}
 		
@@ -196,7 +196,7 @@ public class ClientThread extends Thread {
 		}
 		catch(IllegalArgumentException ex)
 		{
-			System.out.println("Priority was not in correct format! Please select one of [low, medium, high]!");
+			logger.severe("Priority was not in correct format! Please select one of [low, medium, high]!");
 			return "Result|false";
 		}
 		
@@ -206,13 +206,13 @@ public class ClientThread extends Thread {
 		}
 		catch(DateTimeParseException ex)
 		{
-			System.out.println("Due date was not in correct format! Please enter due date in YYYY-MM-DD format!");
+			logger.severe("Due date was not in correct format! Please enter due date in YYYY-MM-DD format!");
 			return "Result|false";
 		}
 		
 		int index = toDoDatabase.createToDo(token, title, parsedPriority, description, parsedDueDate);
 		if(index == -1) {
-			System.out.println("Validation of given token failed! Please provide valid, non-expired token!");
+			logger.severe("Validation of given token failed! Please provide valid, non-expired token!");
 			return "Result|false";
 		}
 
@@ -225,14 +225,14 @@ public class ClientThread extends Thread {
 	 */
 	private String commandListToDos(String[] parts) {
 		if(parts.length < 2) {
-			System.out.println("The command was not in a correct format! It should be ListToDos|Token");
+			logger.severe("The command was not in a correct format! It should be ListToDos|Token");
 			return "Result|false";
 		}
 		
 		String token = parts[1];
 		List<Integer> todos = toDoDatabase.listToDos(token);
 		if(todos == null) {
-			System.out.println("Validation of given token failed! Please provide valid, non-expired token!");
+			logger.severe("Validation of given token failed! Please provide valid, non-expired token!");
 			return "Result|false";
 		}
 		
@@ -250,7 +250,7 @@ public class ClientThread extends Thread {
 	 */
 	private String commandGetToDo(String[] parts) {
 		if(parts.length < 3) {
-			System.out.println("The command was not in a correct format! It should be GetToDo|Token|Index");
+			logger.severe("The command was not in a correct format! It should be GetToDo|Token|Index");
 			return "Result|false";
 		}
 		
@@ -263,13 +263,13 @@ public class ClientThread extends Thread {
 		}
 		catch(NumberFormatException ex)
 		{
-			System.out.println("Index was not in correct format! Please provide a valid index!");
+			logger.severe("Index was not in correct format! Please provide a valid index!");
 			return "Result|false";
 		}
 		
 		ToDo toDo = toDoDatabase.getToDo(token, parsedIndex);
 		if(toDo == null) {
-			System.out.println("Such ToDo doesn't exist! Please provide a valid index of ToDo entry!");
+			logger.severe("Such ToDo doesn't exist! Please provide a valid index of ToDo entry!");
 			return "Result|false";
 		}
 				
@@ -282,7 +282,7 @@ public class ClientThread extends Thread {
 	 */
 	private String commandLogout(String[] parts) {
 		if(parts.length < 2) {
-			System.out.println("The command was not in a correct format! It should be Logout|Token");
+			logger.severe("The command was not in a correct format! It should be Logout|Token");
 			return "Result|false";
 		}
 		
