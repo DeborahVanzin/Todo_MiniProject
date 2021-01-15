@@ -9,8 +9,7 @@ import database.IToDoDatabase;
 import database.InMemoryToDoDatabase;
 import login.ILoginHandler;
 import login.LoginHandler;
-import model.Token;
-import model.User;
+
 
 public class Main {
 	private static Logger logger = Logger.getLogger(Main.class.getName());
@@ -22,6 +21,7 @@ public class Main {
 		IToDoDatabase toDoDatabase = new InMemoryToDoDatabase();
 		ILoginHandler loginHandler = new LoginHandler(toDoDatabase);
 		toDoDatabase.setLoginHandler(loginHandler);
+		toDoDatabase.loadFromFile();
 
 		try (ServerSocket listener = new ServerSocket(PORT)) {
 			

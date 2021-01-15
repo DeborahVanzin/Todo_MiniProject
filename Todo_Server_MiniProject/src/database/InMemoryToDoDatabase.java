@@ -1,5 +1,11 @@
 package database;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +21,7 @@ import utility.PasswordValidator;
 
 public class InMemoryToDoDatabase implements IToDoDatabase {
 	private static Logger logger = Logger.getLogger(InMemoryToDoDatabase.class.getName());
+	private static final String DATABASE_FILENAME = "todo_database.dat";
 
 	private List<User> users = new ArrayList<>();
 	private Map<String, List<ToDo>> userToDoLists = new HashMap<>();
@@ -37,6 +44,7 @@ public class InMemoryToDoDatabase implements IToDoDatabase {
 		
 		logger.info("User with email " + email + " has been registered!");
 		users.add(new User(email, password));
+		saveToFile();
 		return true;
 	}
 
@@ -63,6 +71,7 @@ public class InMemoryToDoDatabase implements IToDoDatabase {
 		List<ToDo> toDoList = userToDoLists.get(email);
 		int index = toDoList.size();
 		toDoList.add(new ToDo(title, priority, description, dueDate));
+		saveToFile();
 		return index;
 	}
 	
@@ -104,5 +113,40 @@ public class InMemoryToDoDatabase implements IToDoDatabase {
 	@Override
 	public void setLoginHandler(ILoginHandler loginHandler) {
 		this.loginHandler = loginHandler;
+	}
+
+	@Override
+	public void loadFromFile() {		
+		try {
+			FileInputStream fileStream = new FileInputStream(DATABASE_FILENAME);
+			ObjectInputStream objStream = new ObjectInputStream(fileStream);
+			users = (List<User>) objStream.readObject();
+			userToDoLists = (Map<String, List<ToDo>>) objStream.readObject();
+			objStream.close();
+			fileStream.close();
+			logger.info("Database loaded successfully! Loaded " + users.size() + " user(s).");
+		} catch (FileNotFoundException e) {
+			logger.warning("Could not read from database because file does not exist!");
+		} catch (IOException e) {
+			logger.severe("Could not read from database! " + e.getMessage());
+		} catch (ClassNotFoundException e) {
+			logger.severe("Could not read from database! " + e.getMessage());
+		}
+	}
+			
+	private void saveToFile() {
+		try {
+			FileOutputStream fileStream = new FileOutputStream(DATABASE_FILENAME);
+			ObjectOutputStream objStream = new ObjectOutputStream(fileStream);
+			objStream.writeObject(users);
+			objStream.writeObject(userToDoLists);
+			objStream.close();
+			fileStream.close();
+			logger.info("Database saved to file successfully!");
+		} catch (FileNotFoundException e) {
+			logger.severe("Could not write database! " + e.getMessage());
+		} catch (IOException e) {
+			logger.severe("Could not write database!" + e.getMessage());
+		}
 	}
 }

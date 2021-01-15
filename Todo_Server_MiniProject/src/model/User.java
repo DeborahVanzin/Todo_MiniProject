@@ -1,11 +1,15 @@
 package model;
 
+import java.io.Serializable;
+
 import utility.PasswordHasher;
 
 /**
  * Represents a user of the system. User has an email and password.
  */
-public class User {
+public class User implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private String email;
 	private String passwordHash;
 	

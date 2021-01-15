@@ -59,4 +59,10 @@ public interface IToDoDatabase {
 	 * @param loginHandler Login handler service to be set
 	 */
 	void setLoginHandler(ILoginHandler loginHandler);
+
+	/**
+	 * Loads persisted data from a database file.
+	 * If file is not present, nothing is loaded.
+	 */
+	void loadFromFile();
 }
