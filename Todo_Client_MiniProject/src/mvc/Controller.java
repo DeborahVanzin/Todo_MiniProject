@@ -28,7 +28,7 @@ public class Controller {
 	private void onBtnSubmitClicked() {
 		ServerCommunicator comm = new ServerCommunicator(view.txtWebAddress.getText(), Integer.parseInt(view.txtPort.getText()));
 		String response = comm.sendCommand(view.txtCommand.getText());
-		view.lblResponse.setText(response);
+		view.txtResponse.setText(response);
 	}
 
 	protected void validatePort(String newPort) {

@@ -23,7 +23,7 @@ public class View {
 	protected TextField txtCommand = new TextField();
 	protected Button btnSubmit = new Button("Submit");
 	
-	protected Label lblResponse = new Label("Response:");
+	protected TextField txtResponse = new TextField("Response:");
 	
 	public View(Stage stage, Model model) {
 		this.stage = stage;
@@ -42,7 +42,7 @@ public class View {
 		rowCommand.getChildren().addAll(txtCommand);
 		rowCommand.getChildren().addAll(btnSubmit);
 		
-		root.getChildren().addAll(rowServerAddress, lblCommand, rowCommand, lblResponse);
+		root.getChildren().addAll(rowServerAddress, lblCommand, rowCommand, txtResponse);
 		
 		Scene scene = new Scene(root, 800, 600);
 		scene.getStylesheets().add(getClass().getResource("Styles.css").toExternalForm());
